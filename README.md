@@ -18,7 +18,7 @@ The endpoint is protected by the **authentication token**. The personalizes toke
 - A **signature** should be indicated in the `x-signature` header
 
 ## API Methods
- ### [Creating a new outbound request (e.g. new order)]() 
+ ### [Creating a new outbound request (e.g. new order)](https://github.com/wapiee/Creating-a-new-outbound-request.git) 
  ### [Preferred Delivery Date and Time parameters]()
  ### [Getting Product's Remained Amount]()
  ### [Getting product Remainder amount v.2 (detailed version)]()
