@@ -202,10 +202,160 @@ Possible trouble statuses (appear when order has some problems with delivery):
 Please note, that you should sign up request as you send it. That is, that payloads `{"TrackingNumbers":["12346126348721"]}` and `{"trackingNumbers": [ "12346126348721" ]}` will have differnet signatures.
 The same belongs to line endings and tab spaces in a payload.
 
+# Getting Product's Remained Amount
+This operation allows you to get the stock remainders of the concrete product, or on the selected warehouse, or country. 
+> `POST /stock/getProductRemainder`
 
-## API Methods
- ### [Creating A New Outbound Request (e.g. new order)](https://github.com/wapiee/Creating-a-new-outbound-request.git)
- ### [Preferred Delivery Date and Time parameters](https://github.com/wapiee/Preferred-Delivery-Date-and-Time-parameters.git)
- ### [Getting Product's Remained Amount](https://github.com/wapiee/Getting-Product-s-Remained-Amount.git)
- ### [Getting Product's Remainded Amount v.2 (detailed version)](https://github.com/wapiee/Getting-product-remainded-amount-v.2.git)
- ### [Update an Order Through the API](https://github.com/wapiee/Update-an-order-through-the-API.git)
+Example:
+```text
+accept: application/json
+content-type: application/json
+x-client-id: <a guid, provided specially for you>
+x-signature: <a HMAC signature you get using `HMAC sercret`, provided specially for you>
+```
+```json 
+{"country":"Italy", "productName": "Demo Product-1"}
+```
+
+**Responses:**
+
+**200 OK**
+
+```json
+{
+    "country": "Italy",
+    "productName": "Demo Product-1",
+    "reminderQuantity": -398
+}
+```
+
+Remarks:
+- Negative reminders may occure in test environment. In production it should always be positive or zero.
+- `country` value may be passed as a country name (Italy) or a country code (IT)
+- if `productName` is not passed, you can get reminders for all products in specified country
+- if `country` and `productName` are not passed, you can get reminders for all products in all countries
+
+
+_Any status except 200 OK should be considered as an error_
+
+**401 Unauthorized** - when x-client-id is missing or is wrong
+
+**400 Bad Request** - when signature or request data is not valid
+
+**500 Internal Server Error** - for internal errors
+```
+{
+    "Error": "<SOME ERROR DESCRIPTION>"
+}
+```
+# Getting Product Remainded Amount v.2
+This changed version of getting remainder request helps client to obtain detailed information regarding his remained goods amount. You can find out what is the remaining on the warehouse quantity, what amount of goods is reserved, what is available at the moment, what amount is in transit right now and what amount is returning to the warehouse.
+The second version of the API for getting remained amount is accessible via:
+
+`https://warehouse-api.azurewebsites.net/api/stock/getProductRemainderV2`
+
+The request structure is the same as in the first version:
+
+Example:
+```text
+accept: application/json
+content-type: application/json
+x-client-id: <a guid, provided specially for you>
+x-signature: <a HMAC signature you get using `HMAC sercret`, provided specially for you>
+```
+```json 
+{"country":"Italy", "productName": "Demo Product-1"}
+```
+ 
+**Responses:**
+
+**200 OK**
+
+```json
+{
+    "country": "Italy",
+    "warehouseName" : "ITWH1"
+    "productName": "Demo Product-1",
+    "remainingQuantity":0
+    "reservedQuantity":0
+    "availableQuantity":0 
+    "InTransitQuantity":0  
+    "returnungQuantity":0 
+}
+```
+# Update An Order Through The API
+To change order's data you should send the request to the:
+
+> `https://warehouse-api.azurewebsites.net/api/outbounds/UpdateOrder`
+
+Can be used the same request as is used for creating a new order, but additionally the `TrackingNumber` field should be added with the value (WH tracking number) of the particular order, that you want to change.
+```json 
+// this is an example of the request
+{  
+    "trackingNumber": "WH00000012345"  /* Enter here the tracking number of the order you want to change*/
+    "orderNumber":"5",
+    "product":{  
+        "name":"Product Name",
+        "quantity":2,
+        "price":41.5
+    },
+    "additionalProducts" : [],
+    "cashOnDelivery": 85.00,
+    "receiver":{  
+        "firstName":"Test",
+        "lastName":"Receiver",
+        "phoneNumber":"123456789",
+        "emailAddress": "test@test.com",
+        "nationalID": "XXXXXXXXXX",
+        "houseNumber":"122",
+        "addressText":"Some street",
+        "addressAdditionalInfo":"apt. 35",
+        "city": "Venice",
+        "country":"IT",
+        "zipCode":"30123"
+    },
+    "comment": "some text (optional)"
+}
+```
+
+ **Please Note:**
+
+Order can be changed only if it is in one of these statuses: `Pending`, `OnHold`, `Error`.
+
+**Responses:**
+ 
+**200 OK**
+
+
+```
+{
+       "The order with number 'WH0000261906' has been updated successfully"
+}
+```
+
+
+If the order already is in status which doesnt allow to change order details you will receive the following response:
+
+```
+{
+	"error": "This order cannot be edited anymore!"
+}
+```
+
+Also order can not be changed if it has a critical open incident. In this case the response is:
+
+
+```
+{
+	"error": "This order has critical incident opened. Please resolve incident before order update."
+}
+```
+
+If in the change request were sent the same data as order has had initially, you will get the response:
+
+
+```
+{
+	"error": "The data you have provided brings no changes. Please check and try again!"
+}
+```
