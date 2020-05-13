@@ -104,6 +104,103 @@ Signature or request data is not valid
     "Error": "<SOME ERROR DESCRIPTION>"
 }
 ```
+# Preferred Delivery Date and Time parameters
+In the Create Order request now can be indicated the preferred Delivery Date and Time in the following format:
+ 
+
+```json
+{
+   ...
+   "preferredDeliveryDate": "YYYY-MM-DD",
+   "preferredDeliveryDayPart": "morning" | "evening"
+}
+```
+ **Important!**
+
+- Both fields are not required. If the date is indicated in incorrect format, or if the `preferredDeliveryDayPart` will have any other value than `morning` or `evening` these values will be ignored. 
+
+- If in order there is `preferredDeliveryDate` indicated then the order will be sent to the partner not less than 2 days before that date, so that delivery does not happen before the correct date.
+
+- ##  Tracking orders
+ 
+To track the order you should know the tracking (WH) number of the order and should send the below mentioned API request:
+
+> `POST /tracking`
+
+Example:
+```text
+accept: application/json
+content-type: application/json
+x-client-id: <a guid, provided specially for you>
+x-signature: <a HMAC signature you get using `HMAC sercret`, provided specially for you>
+```
+```json 
+{  
+    "trackingNumbers":[  
+        "WH0000000024"
+    ]
+}
+```
+
+**Responses:**
+
+ **200 OK**
+
+```json
+{
+    "statuses": [
+        {
+            "trackingNumber": "WH0000000024",
+            "deliveryStatus": "Pending",
+            "deliveryStatusText": "Order is being processed",
+            "troubleStatus": "IsAbsent"
+        }
+    ]
+}
+```
+_Any status except 200 OK should be considered as an error._
+
+**401 Unauthorized** - when x-client-id is missing or is wrong
+
+**400 Bad Request** - when signature or request data is not valid
+
+**500 Internal Server Error** - for internal errors
+```
+{
+    "Error": "<SOME ERROR DESCRIPTION>"
+}
+```
+
+##Possible statuses:
+
+- `Pending` - the status indicates that the outbound order has been just created and still not passed to the Partner;
+- `OnHold` - the status may appear, when delivery date is far in the future and the order will stay on hold on our side for some days, to prevent delivery earlier, than it is expected;
+- `Error` - the status appears when during the order's processing happens a technical error. Status may appear only before the order has been sent for delivery;
+- `WaybillNotCreated` - the status means that there are some questions regarding the delivery address. This is the temporary status, which after solving all address related questions will be changed to the status InTransit;
+- `AssignedToPartner` - the status means that the order has been passed to our partners in the destination country for processing;
+- `Dispatched` - the status indicates that the outbound order has been passed to the carrier services;
+- `InTransit` - the status indicates that the order, is on it's way to the customer;
+- `Delivered` - parcel has been delivered to the customer;
+- `Returning` - the order is on it's way back to the initial warehouse;
+- `ReturnedToSender` - indicates that products was returned to the initial warehouse and remainders are added back to the stock;
+- `Cancelled` - parcel's processing is cancelled;
+- `OutOfStock` - order cannot be processed, because of lack of goods in the warehouse. It will be processed right after goods are present on stock (delivered new or returned);
+- `Lost` - due to some reasons, partners may report this status;
+- `Damaged` - the status may occur if the parcel has been damaged on the way to the customer.
+
+
+Possible trouble statuses (appear when order has some problems with delivery):
+- `IsAbsent1` - indicates, that a recipient was not at the delivery address during first delivery attempt;
+- `IsAbsent` - indicates, that a recipient was not at the delivery address during following delivery attempts;
+- `CannotLocateConsignee1` - indicates, that a courier is not able to find where to deliver the package during first delivery attempt;
+- `CannotLocateConsignee` - indicates, that a courier is not able to find where to deliver the package during following delivery attempts;
+- `IsRefused` - indicates, that a recipient refused to receive the package (pay for it).
+
+
+ **Important!**
+
+Please note, that you should sign up request as you send it. That is, that payloads `{"TrackingNumbers":["12346126348721"]}` and `{"trackingNumbers": [ "12346126348721" ]}` will have differnet signatures.
+The same belongs to line endings and tab spaces in a payload.
 
 
 ## API Methods
