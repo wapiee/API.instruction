@@ -137,7 +137,7 @@ x-client-id: <a guid, provided specially for you>
 x-signature: <a HMAC signature you get using `HMAC secret`, provided specially for you>
 ```
 **Body:**
-```json 
+```js
 {  
     "trackingNumbers":[  
         "WH0000000024",
