@@ -175,7 +175,7 @@ _Any status except 200 OK should be considered as an error._
 }
 ```
 
-###Possible statuses:
+### Possible statuses:
 - `Pending` - the status indicates that the outbound order has been just created and still not passed to the Partner;
 - `OnHold` - the status may appear, when delivery date is far in the future and the order will stay on hold on our side for some days, to prevent delivery earlier, than it is expected;
 - `Error` - the status appears when during the order's processing happens a technical error. Status may appear only before the order has been sent for delivery;
@@ -285,7 +285,7 @@ x-signature: <a HMAC signature you get using `HMAC secret`, provided specially f
     "returningQuantity":0 
 }
 ```
-#Update An Order
+# Update An Order
 To change order's data you should send the request to the:
 
 > `POST /outbounds/UpdateOrder`
