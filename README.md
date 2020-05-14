@@ -35,7 +35,7 @@ x-signature: <a HMAC signature you get using `HMAC secret`, provided specially f
 ```
 **Body**:
 
-```json 
+```js 
 {  
     "orderNumber":"5", //Each order id should be unique
     "product":{  
@@ -109,7 +109,7 @@ Signature or request data is not valid
 In the Create Order request now can be indicated the preferred Delivery Date and Time in the following format:
  
 
-```json
+```js
 {
    ...
    "preferredDeliveryDate": "YYYY-MM-DD",
@@ -300,7 +300,7 @@ x-client-id: <a guid, provided specially for you>
 x-signature: <a HMAC signature you get using `HMAC secret`, provided specially for you>
 ```
 **Body:**
-```json 
+```js
 {  
     "trackingNumber": "WH00000012345",  // Enter here the tracking number of the order you want to change
     "orderNumber":"5",
