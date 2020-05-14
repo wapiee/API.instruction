@@ -37,7 +37,7 @@ x-signature: <a HMAC signature you get using `HMAC secret`, provided specially f
 
 ```json 
 {  
-    "orderNumber":"5", /*Each order id should be unique*/
+    "orderNumber":"5", //Each order id should be unique
     "product":{  
         "name":"Product Name",
         "quantity":2,
@@ -276,13 +276,13 @@ x-signature: <a HMAC signature you get using `HMAC secret`, provided specially f
 ```json
 {
     "country": "Italy",
-    "warehouseName" : "ITWH1"
+    "warehouseName" : "ITWH1",
     "productName": "Demo Product-1",
-    "remainingQuantity":0
-    "reservedQuantity":0
-    "availableQuantity":0 
-    "InTransitQuantity":0  
-    "returnungQuantity":0 
+    "remainingQuantity":0,
+    "reservedQuantity":0,
+    "availableQuantity":0, 
+    "InTransitQuantity":0, 
+    "returningQuantity":0 
 }
 ```
 #Update An Order
@@ -302,7 +302,7 @@ x-signature: <a HMAC signature you get using `HMAC secret`, provided specially f
 **Body:**
 ```json 
 {  
-    "trackingNumber": "WH00000012345"  /* Enter here the tracking number of the order you want to change*/
+    "trackingNumber": "WH00000012345",  // Enter here the tracking number of the order you want to change
     "orderNumber":"5",
     "product":{  
         "name":"Product Name",
